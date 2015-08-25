@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+
+<head>
+<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.6.0/build/autocomplete/assets/skins/sam/autocomplete.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>YUI AutoComplete</title>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+
+#container, #search-box {
+	font-family: "Trebuchet MS", Helvetica, Sans-Serif;
+	font-size: 14px;
+	width: 200px;
+	padding: 2px;
+	margin: 20px;
+}
+
+#container {
+	margin: 22px 0 0 18px;
+}
+
+#submit {
+	padding: 2px;
+	margin: 20px;
+	margin-left: 230px;
+}
+</style>
+</head>
+
+<body class="yui-skin-sam">
+<form id="search-form" action="">
+	<input type="text" id="search-box" name="search-box" />
+	<input type="submit" value="Search!" id="submit" name="submit" />
+</form>
+<div id="container"></div>
+
+<script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/animation/animation-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/autocomplete/autocomplete-min.js"></script>
+<script type="text/javascript">
+var countries = new Array("United States", "Canada", "Mexico", "Russia", "India", "China", "Mongolia", "Romania", "Morocco");
+var myDataSource = new YAHOO.util.LocalDataSource(countries);
+var myAC = new YAHOO.widget.AutoComplete("search-box", "container", myDataSource);
+</script>
+</body>
+
+</html>

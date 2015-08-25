@@ -1,0 +1,11 @@
+{
+   foo: "bar",
+   name: "memyselfandi",
+   aFunction: function(){
+      alert("internal function run");
+   },
+   nested: {
+       sub: "element",
+       another: "subelement"
+   }
+}

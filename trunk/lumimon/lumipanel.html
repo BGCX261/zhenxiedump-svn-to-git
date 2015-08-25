@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>CMS luminosity Monitor</title>
+<style type="text/css">
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/calendar/assets/skins/sam/calendar.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/slider/assets/skins/sam/slider.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/autocomplete/assets/skins/sam/autocomplete.css"/>
+
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/calendar/calendar-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/container/container_core-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/element/element-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/button/button-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/animation/animation-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/autocomplete/autocomplete-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/slider/slider-min.js"></script>
+
+<style type="text/css">
+.yui-skin-sam .yui-ac-input{position:static;width:20em;vertical-align:middle;}
+.yui-skin-sam .yui-ac-container {width:20em;left:0px;}
+.yui-ac .yui-button {vertical-align:middle;}
+.yui-ac .yui-button button {background: url(../autocomplete/assets/img/ac-arrow-rt.png) center center no-repeat }
+.yui-ac .open .yui-button button {background: url(../autocomplete/assets/img/ac-arrow-dn.png) center center no-repeat}
+</style>
+</head>
+<body class="yui-skin-sam">
+<script>
+YAHOO.util.Event.onContentReady("l",function (){
+   var oMyButton=new YAHOO.widget.Button("ybtn1select",{type:"menu",menu:"ybtn1select"});
+   var onMenuClick=function(p_sType,p_aArgs){
+       var oEvent=p_aArgs[0], oMenuItem=p_aArgs[1];
+       if (oMenuItem){
+            alert("[MenuItem Properties] text: "+ oMenuItem.cfg.getProperty("text") + ", value: " + oMenuItem.value);
+       }
+   };
+   oMyButton.getMenu().subscribe("click",onMenuClick);
+});
+YAHOO.util.Event.onContentReady("triggerpathbutton",function(){
+   var oConfigs = {
+       prehighlightClassName: "yui-ac-prehighlight",
+       useShadow: true,
+       queryDelay: 0,
+       minQueryLength: 0,
+       animVert: .01
+   }
+   var hltpathlist = new Array("All","AlCa_EcalEta_8E29","AlCa_EcalEta_Cosmics","AlCa_EcalPhiSym","AlCa_EcalPi0_8E29");
+   var hltdatasource = new YAHOO.util.LocalDataSource(hltpathlist);
+   var oHLTComboBox = new YAHOO.widget.AutoComplete("hltinput","hltContainer",hltdatasource,oConfigs);
+   var toggler = YAHOO.util.Dom.get("toggleMe");
+   var oPushButton = new YAHOO.widget.Button({container:toggler});
+   var toggleHandler = function(e){
+      if(!YAHOO.util.Dom.hasClass(toggler,"open")){
+         YAHOO.util.Dom.addClass(toggler,"open")
+      }
+      if(oHLTComboBox.isContainerOpen()){
+         oHLTComboBox.collapseContainer();
+      }else{
+         oHLTComboBox.getInputEl().focus();
+         setTimeout(function() {oHLTComboBox.sendQuery("");},0);
+      }
+   }
+   oPushButton.on("click",toggleHandler);
+   oHLTComboBox.containerCollapseEvent.subscribe(function(){YAHOO.util.Dom.removeClass(toggler,"open")});
+});
+
+YAHOO.util.Event.onContentReady("getdatabutton",function (){
+    var oDeliveredButton = new YAHOO.widget.Button("Delivered");
+    var oDeliveredButton = new YAHOO.widget.Button("Recorded");   
+});
+
+var Dom = YAHOO.util.Dom;
+var range=200;
+var tickSize=0;
+var minThumbDistance = 0;
+var thumbmin=1;
+var thumbmax=200;//in pixel
+var initValues=[thumbmin,thumbmax];
+var cf=900/(range-20);
+var convert = function(val){
+  return Math.round(val * cf + 100);
+};
+    
+YAHOO.util.Event.onDOMReady(function(){
+    var slider=YAHOO.widget.Slider.getHorizDualSlider("runinput","min_thumb","max_thumb",range,tickSize,initValues);
+    slider.minRange = minThumbDistance;
+    var updateUI = function(){
+       var minvalnode=Dom.get("min_run");
+       minvalnode.innerHTML=slider.minVal;
+       var maxvalnode=Dom.get("max_run");
+       maxvalnode.innerHTML=slider.maxVal;
+    };
+    slider.subscribe('ready',updateUI);
+    slider.subscribe('change',updateUI);
+});
+
+
+</script>
+<h1>Luminosity Page (Panel design Demo)</h1>
+<form id="lumiqueryform" name="lumiqueryform" method="post">
+<fieldset id="lumiquery">
+ <legend>Integrated Luminosity in year  
+         <select id="ybtn1select" name="ybtn1select">
+	    <option value="2009">2009</option>
+	    <option value="2010">2010</option>
+	    <option value="2011">2011</option>
+	 </select>
+	 <select id="ybtn1select2" name="ybtn1select2">
+	    <option value="2009">2009</option>
+	    <option value="2010">2010</option>
+	    <option value="2011">2011</option>
+	 </select>
+</legend>
+   Select Run Range:<div id="runinput" class="yui-h-slider">
+      <div id="min_thumb" class="yui-slider-thumb"><img src="left-thumb.png"></div> 
+      <div id="max_thumb" class="yui-slider-thumb"><img src="right-thumb.png"></div>
+    </div>  
+   <p>Min: <span id="min_run">0</span> Max: <span id="max_run">0</span></p>
+   Or Select Run(s):
+   <select id="runselect" name="runselect">
+	    <option selected>1100</option>
+	    <option>1200</option>
+	    <option>1300</option>
+	    <option>2200</option>
+	    <option>2300</option>
+   </select>
+
+   <br>
+   HLT trigger path: <div id="triggerpathbutton">
+     <input id="hltinput" type="text"> <span id="toggleMe"></span>
+     <div id="hltContainer"></div>
+   </div>
+  
+   <div id="getdatabuttons">
+      <button id="getdeliveredBTN" type="submit" name="getdelivered" value="getdelivered">Delivered</button>
+      <button id="getrecordedBTN" type="submit" name="getrecorded" value="getrecorded">Recorded</button>
+     Result:
+    <textarea name="result" id="result" style="width:100px; height:25px;background-color:#D0F18F;"></textarea><br/>
+   </div>
+</form>
+</fieldset>
+<hr>
+<fieldset id="lumidraw">   
+<legend>Dynamic Plots in year
+   <select id="ybtn2select" name="ybtn2select">
+	    <option value="2009">2009</option>
+	    <option value="2010">2010</option>
+	    <option value="2011">2011</option>
+   </select>
+   <select id="ybtn2select2" name="ybtn2select2">
+	    <option value="2009">2009</option>
+	    <option value="2010">2010</option>
+	    <option value="2011">2011</option>
+   </select>
+</legend>
+   <form id="lumidrawform" name="lumidrawform" method="post">
+   <div id="drawdatabuttons">
+     <button id="IntLumiPerdayBTN" type="submit" name="drawIntLumiPerday" value="drawIntLumiPerday" onClick="window.open('LumiIntPerDay.png');">Integrated Luminosity - Per Day</button>
+     <label>start date (m/d)</label>
+     <select id="startmonth" name="startmonth" value="month">
+       <option value="01">01</option>
+       <option value="02">02</option>
+       <option value="03">03</option>
+       <option value="04">04</option>
+       <option value="05">05</option>
+       <option value="06">06</option>
+       <option value="07">07</option>
+       <option value="08">08</option>
+       <option value="09">09</option>
+       <option value="10">10</option>
+       <option value="11">11</option>
+       <option value="12">12</option>
+     </select>
+     <select id="startday" name="startday" value="day">
+       <option value="01">01</option>
+       <option value="02">02</option>
+       <option value="03">03</option>
+       <option value="04">04</option>
+       <option value="05">05</option>
+       <option value="06">06</option>
+       <option value="07">07</option>
+       <option value="08">08</option>
+       <option value="09">09</option>
+       <option value="10">10</option>
+       <option value="11">11</option>
+       <option value="12">12</option>
+       <option value="13">13</option>
+       <option value="14">14</option>
+       <option value="15">15</option>
+       <option value="16">16</option>
+       <option value="17">17</option>
+       <option value="18">18</option>
+       <option value="19">19</option>
+       <option value="20">20</option>
+       <option value="21">21</option>
+       <option value="22">22</option>
+       <option value="23">23</option>
+       <option value="24">24</option>
+       <option value="25">25</option>
+       <option value="26">26</option>
+       <option value="27">27</option>
+       <option value="28">28</option>
+       <option value="29">29</option>
+       <option value="30">30</option>
+       <option value="31">31</option>
+     </select>
+     <label>end date(m/d)</label>
+     <select id="endmonth" name="endmonth" >
+       <option value="01">01</option>
+       <option value="02">02</option>
+       <option value="03">03</option>
+       <option value="04">04</option>
+       <option value="05">05</option>
+       <option value="06">06</option>
+       <option value="07">07</option>
+       <option value="08">08</option>
+       <option value="09">09</option>
+       <option value="10">10</option>
+       <option value="11">11</option>
+       <option value="12">12</option>
+     </select>
+     <select id="endday" name="endday" >
+       <option value="01">01</option>
+       <option value="02">02</option>
+       <option value="03">03</option>
+       <option value="04">04</option>
+       <option value="05">05</option>
+       <option value="06">06</option>
+       <option value="07">07</option>
+       <option value="08">08</option>
+       <option value="09">09</option>
+       <option value="10">10</option>
+       <option value="11">11</option>
+       <option value="12">12</option>
+       <option value="13">13</option>
+       <option value="14">14</option>
+       <option value="15">15</option>
+       <option value="16">16</option>
+       <option value="17">17</option>
+       <option value="18">18</option>
+       <option value="19">19</option>
+       <option value="20">20</option>
+       <option value="21">21</option>
+       <option value="22">22</option>
+       <option value="23">23</option>
+       <option value="24">24</option>
+       <option value="25">25</option>
+       <option value="26">26</option>
+       <option value="27">27</option>
+       <option value="28">28</option>
+       <option value="29">29</option>
+       <option value="30">30</option>
+       <option value="31">31</option>
+     </select>
+     <br>
+     <br>
+       <div id="runfields">
+     <button id="IntLumiPerrunBTN" type="submit" name="drawIntLumiPerrun" value="drawIntLumiPerrun" onClick="window.open('LumiIntPerRun.png');">Integrated Luminosity - Per Run</button>
+   
+      <label>start run</label>
+      <select>
+	            <option >1100</option>
+		    <option >1101</option>
+		    <option >1102</option>
+		    <option >1103</option>
+		    <option >1104</option>
+		    <option >1106</option>
+      </select>		 
+      <label>end run</label>
+      <select>
+	            <option >1100</option>
+		    <option >1101</option>
+		    <option >1102</option>
+		    <option >1103</option>
+		    <option >1104</option>
+		    <option >1106</option>
+		    <option >2200</option>
+      </select>		 
+       </div>
+     <br>
+     <div id="runinput">
+     <button id="IntLumiPerlsBTN" type="submit" name="drawIntLumiPerls" value="drawIntLumiPerls">Integrated Luminosity - Per LS </button>   
+      select run(s) <select multiple size="3">
+	            <option selected>1100</option>
+		    <option >1101</option>
+		    <option >1102</option>
+		    <option >1103</option>
+		    <option >1104</option>
+		    <option >1106</option>
+                 </select>
+     </div>
+     <br>
+      <div id="runinputLS">
+     <button id="InstLumiBTN" type="submit" name="drawInstLumi" value="drawInstLumi">Instantaneous Luminosity vs LS </button>
+      select run(s)  <select multiple size="3">
+	            <option selected>1100</option>
+		    <option >1101</option>
+		    <option >1102</option>
+		    <option >1103</option>
+		    <option >1104</option>
+		    <option >1106</option>
+		    <option >2200</option>  
+                 </select>
+      </div>
+      <br>
+      <div id="runinputBX">
+     <button id="InstLumiBXBTN" type="submit" name="drawInstLumiBX" value="drawInstLumiBX">Instantaneous Luminosity vs BX in 3 LS samples</button>
+       select run(s) <select multiple size="3">
+	            <option selected>1100</option>
+		    <option >1101</option>
+		    <option >1102</option>
+		    <option >1103</option>
+		    <option >1104</option>
+		    <option >1106</option>
+                 </select>
+     </div>
+   </div>
+</form>
+</fieldset>
+<hr>
+<fieldset>
+<legend>Static Plot Archive</legend>
+<ul>
+  <li> Integrated Luminosity commissioning @ Center Of Mass 0.9Tev</li>
+     <a href="#">per day</a> - <a href="#">per run</a>
+  <li> Integrated Luminosity 11/09-12/09 @ Center Of Mass 7Tev</li>
+     <a href="#">per day</a> - <a href="#">per run</a>
+  <li> Integrated Luminosity 02/10-04/10  @ Center Of Mass 7/10Tev </li>
+     <a href="#">per day</a> - <a href="#">per run</a>
+</ul>
+</fieldset>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+ <title>test dijit</title>
+ <link rel="sylesheet" href="dojotoolkit/dijit/themes/tundra/tundra.css"/>
+
+  <script type="text/javascript" src="dojotoolkit/dojo/dojo.js" djConfig="parseOnLoad:true, isDebug:true"></script>
+  <script type="text/javascript">
+      dojo.require("dijit.Dialog");
+      dojo.require("dijit.form.Button");
+     
+  </script>
+  <style type="text/css">
+  </style>
+</head>
+
+<body class="tundra"> <!-- this is a Typical webpage starting point -->
+<h1 id="testHeading"> Dijit skeleton page</h1>
+<div dojoType="dijit.Dialog" id="sampleNode" title="The First Widget">
+    <p>I am the content inside the dialog</p>
+</div>
+<button dojoType="dijit.form.Button" id="myButton" onClick="dijit.byId('sampleNode').show()">
+    Show Dialog
+</button>
+<button dojoType="dijit.form.Button" id="otherButton" onClick="dijit.byId('sampleNode').attr('href','sample.txt')">
+    Change Content
+</button>
+<div id="anotherNode">
+</div>
+</body>
+</html>

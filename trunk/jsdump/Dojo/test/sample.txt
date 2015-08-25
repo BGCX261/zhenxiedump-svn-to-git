@@ -1,0 +1,2 @@
+I am a <em> remote </em> file.
+We used Ajax to put this text in our page.

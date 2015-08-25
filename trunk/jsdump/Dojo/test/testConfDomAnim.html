@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+ <title>test dojo</title>
+  <script type="text/javascript">
+     var djConfig = {
+                parseOnLoad:true,
+                isDebug:true
+     };
+  </script>
+  <script type="text/javascript" src="./dojotoolkit/dojo/dojo.js" ></script>
+  <script type="text/javascript">
+   dojo.require("dojo.parser");
+   dojo.require("dojo.NodeList-fx");
+   dojo.require("dijit.form.Button");
+   dojo.require("dijit.TitlePane");
+   var mineObj = {
+       aMethod: function(){
+           console.log("running A");
+       },
+       bMethod: function(){
+           console.log("running B");
+       }
+   };
+   var otherObj = {
+       cMethod: function(){
+           console.log("running C");
+       }
+   };
+   var init = function(){
+      dojo.byId("testHeading").innerHTML = "We're on our way!";
+      console.log("onLoad fires after require() is done");
+      dojo.query(".para").addClass("testClass").fadeOut({delay:500}).play();
+      dojo.query("#testHeading").style("cursor","pointer").connect("onclick",function(){
+         this.innerHTML="I've been clicked";
+        });
+      dojo.style("testHeading","opacity","0");
+      dojo.connect(mineObj,"aMethod",mineObj,"bMethod");
+      dojo.connect(mineObj,"bMethod",otherObj,"cMethod");
+      mineObj.aMethod();
+      var animArgs = {
+        node: "testHeading",
+        duration: 1000
+      };
+      var anim1 = dojo.fadeOut(animArgs);
+      var anim2 = dojo.animateProperty({
+        node: "testHeading",
+        delay: 1000,
+        properties:{
+           opacity: {end: 1},
+           fontSize: {end:19, unit:"pt"}
+        }
+      });
+      anim1.play();
+      anim2.play();
+   };
+   var disableLinks = function(){
+      dojo.query("a").connect("onclick",function(e){
+        e.preventDefault();
+        console.log("clicked: ",e.target);
+      });
+   };
+
+   dojo.addOnLoad(init);
+   dojo.addOnLoad(disableLinks);
+  </script>
+  <style type="text/css">
+     .testClass {
+        color:#ff0000;
+     }
+  </style>
+</head>
+
+<body> <!-- this is a Typical webpage starting point -->
+<h1 id="testHeading"> Dojo skeleton page</h1>
+<a class="link" href="#">First link</a>
+<a class="link" href="#">Second link</a>
+<p class="para">First paragraph</p>
+<p class="para">Second paragraph</p>
+<p class="para">Third paragraph</p>
+
+<div id="contentNode">
+   <p> Content content</p>
+</div>
+
+</body>
+</html>
